@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install
 Pin a release tag:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install.sh | bash -s -- v0.1.0
+curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install.sh | bash -s -- v0.2.0
 ```
 
 Installs into `~/.local/lib/kmpfire` and links `~/.local/bin/kmpfire` (adds that dir to your shell `PATH` if needed).
@@ -113,7 +113,7 @@ kmpfire configure --yes --project=<FIREBASE_PROJECT_ID>
 kmpfire auto-detects:
 
 - Android `applicationId` from the androidApp Gradle file
-- iOS bundle id from `project.pbxproj`
+- iOS bundle id from `project.pbxproj`, or Compose Multiplatform `*.xcconfig` (`$(TEAM_ID)` resolved)
 
 If no Firebase app matches, it creates one, then writes:
 
@@ -189,7 +189,7 @@ kmpfire configure --platforms=ios \
   --project=<FIREBASE_PROJECT_ID> --yes
 ```
 
-**Important:** pass `--ios-bundle-id` for flavors; otherwise kmpfire detects the default bundle id from `pbxproj` only. iOS plist writes / Xcode patching are best-effort from a macOS environment.
+**Important:** pass `--ios-bundle-id` for flavors; otherwise kmpfire detects the default bundle id from `pbxproj` / `.xcconfig` only. iOS plist writes / Xcode patching are best-effort from a macOS environment.
 
 ### Example: debug + release style paths
 

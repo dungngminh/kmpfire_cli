@@ -41,4 +41,41 @@ class PbxBundleIdParserTest {
         val src = """PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER)";"""
         assertNull(PbxBundleIdParser.parseBundleId(src))
     }
+
+    @Test
+    fun parsesComposeMultiplatformXcconfigAndStripsEmptyTeamId() {
+        val xcconfig = """
+            TEAM_ID=
+
+            PRODUCT_NAME=KMPFireTest
+            PRODUCT_BUNDLE_IDENTIFIER=me.dungngminh.kmpfiretest.KMPFireTest${'$'}(TEAM_ID)
+        """.trimIndent()
+        assertEquals(
+            "me.dungngminh.kmpfiretest.KMPFireTest",
+            PbxBundleIdParser.parseBundleId(pbxproj = null, xcconfigs = listOf(xcconfig)),
+        )
+    }
+
+    @Test
+    fun resolvesPbxPlaceholderFromXcconfig() {
+        val pbx = """PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER)";"""
+        val xcconfig = """
+            TEAM_ID=ABC
+            PRODUCT_BUNDLE_IDENTIFIER=com.example.app${'$'}(TEAM_ID)
+        """.trimIndent()
+        assertEquals(
+            "com.example.appABC",
+            PbxBundleIdParser.parseBundleId(pbxproj = pbx, xcconfigs = listOf(xcconfig)),
+        )
+    }
+
+    @Test
+    fun prefersLiteralPbxprojOverXcconfig() {
+        val pbx = """PRODUCT_BUNDLE_IDENTIFIER = com.example.app.ios;"""
+        val xcconfig = "PRODUCT_BUNDLE_IDENTIFIER=com.example.other"
+        assertEquals(
+            "com.example.app.ios",
+            PbxBundleIdParser.parseBundleId(pbxproj = pbx, xcconfigs = listOf(xcconfig)),
+        )
+    }
 }

@@ -4,7 +4,7 @@ set -euo pipefail
 # Install the `kmpfire` CLI from GitHub Releases (project: kmpfire_cli).
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install.sh | bash
-#   curl -fsSL ... | bash -s -- v0.1.0
+#   curl -fsSL ... | bash -s -- v0.2.0
 
 REPO="dungngminh/kmpfire_cli"
 INSTALL_DIR="${KMPFIRE_INSTALL_DIR:-$HOME/.local/lib/kmpfire}"
