@@ -117,10 +117,49 @@ class ProjectDetectorJvmTest {
             val detected = ProjectDetector().detect(root.absolutePath)
             assertEquals(LayoutKind.LegacyComposeApp, detected.layoutKind)
             assertEquals("com.example.compose", detected.androidPackageName)
+            assertEquals("com.example.compose.ios", detected.iosBundleId)
             assertEquals(
                 root.resolve("composeApp/google-services.json").absolutePath,
                 detected.defaultAndroidOut,
             )
+        } finally {
+            root.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun detectsIosBundleIdFromComposeMultiplatformXcconfig() {
+        val root = Files.createTempDirectory("kmpfire-xcconfig").toFile()
+        try {
+            FileTree(root).apply {
+                file("settings.gradle.kts", "rootProject.name = \"KMPFireTest\"")
+                dir("shared")
+                dir("androidApp")
+                file(
+                    "androidApp/build.gradle.kts",
+                    """android { namespace = "me.dungngminh.kmpfiretest" }""",
+                )
+                dir("iosApp/iosApp")
+                file(
+                    "iosApp/iosApp.xcodeproj/project.pbxproj",
+                    """
+                    baseConfigurationReferenceRelativePath = Config.xcconfig;
+                    GENERATE_INFOPLIST_FILE = YES;
+                    """.trimIndent(),
+                )
+                file(
+                    "iosApp/Configuration/Config.xcconfig",
+                    """
+                    TEAM_ID=
+
+                    PRODUCT_NAME=KMPFireTest
+                    PRODUCT_BUNDLE_IDENTIFIER=me.dungngminh.kmpfiretest.KMPFireTest${'$'}(TEAM_ID)
+                    """.trimIndent(),
+                )
+            }
+
+            val detected = ProjectDetector().detect(root.absolutePath)
+            assertEquals("me.dungngminh.kmpfiretest.KMPFireTest", detected.iosBundleId)
         } finally {
             root.deleteRecursively()
         }

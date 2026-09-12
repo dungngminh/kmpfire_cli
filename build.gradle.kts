@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.github.kmpfire"
-version = "0.1.0"
+version = "0.2.0"
 
 val generateAppVersion = tasks.register("generateAppVersion") {
     val outputDir = layout.buildDirectory.dir("generated/appVersion/commonMain/kotlin")

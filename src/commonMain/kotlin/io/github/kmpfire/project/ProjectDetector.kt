@@ -110,10 +110,16 @@ class ProjectDetector(
     }
 
     private fun readIosBundleId(iosAppDir: String): String? {
-        val pbx = fs.walkFiles(iosAppDir)
-            .firstOrNull { it.endsWith("project.pbxproj") }
-            ?: return null
-        return PbxBundleIdParser.parseBundleId(fs.readText(pbx))
+        val files = fs.walkFiles(iosAppDir)
+        val pbx = files.firstOrNull { it.endsWith("project.pbxproj") }
+        val xcconfigs = files
+            .filter { it.endsWith(".xcconfig", ignoreCase = true) }
+            .sorted()
+        if (pbx == null && xcconfigs.isEmpty()) return null
+        return PbxBundleIdParser.parseBundleId(
+            pbxproj = pbx?.let { fs.readText(it) },
+            xcconfigs = xcconfigs.map { fs.readText(it) },
+        )
     }
 
     private fun defaultIosPlistPath(iosAppDir: String): String {
