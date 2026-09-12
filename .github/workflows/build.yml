@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: JVM tests
+        run: ./gradlew jvmTest --no-daemon
+
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            task: linkReleaseExecutableMacosArm64
+            artifact: kmpfire-macos-arm64
+            path: build/bin/macosArm64/releaseExecutable/kmpfire.kexe
+          - os: macos-13
+            task: linkReleaseExecutableMacosX64
+            artifact: kmpfire-macos-x64
+            path: build/bin/macosX64/releaseExecutable/kmpfire.kexe
+          - os: ubuntu-latest
+            task: linkReleaseExecutableLinuxX64
+            artifact: kmpfire-linux-x64
+            path: build/bin/linuxX64/releaseExecutable/kmpfire.kexe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Link release executable
+        run: ./gradlew ${{ matrix.task }} --no-daemon
+      - name: Rename artifact
+        run: |
+          cp "${{ matrix.path }}" "${{ matrix.artifact }}"
+          chmod +x "${{ matrix.artifact }}" || true
+          ./${{ matrix.artifact }} --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, native]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
