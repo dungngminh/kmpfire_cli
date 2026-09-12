@@ -94,9 +94,24 @@ Prefer `jvmTest` for fast feedback. Native link when changing process/fs actuals
 - Filesystem / Process tests that need temp dirs: `src/jvmTest`
 - Fake `FirebaseClient` in tests — do not call real Firebase in unit tests
 
+## Release / install packaging
+
+| Piece | Role |
+|---|---|
+| `install.sh` | curl install from GitHub Releases → `~/.local/bin/kmpfire` |
+| `.github/workflows/build.yml` | CI: `jvmTest` + native link on push/PR |
+| `.github/workflows/release.yml` | Tag `v*`: native tar.gz assets + GitHub Release |
+| `.github/workflows/deploy-homebrew.yml` | On release published → push formula to `dungngminh/homebrew-kmpfire_cli` |
+| `.github/homebrew/kmpfire.rb.template` | Formula template (`{{VERSION}}`, SHA placeholders) |
+| `packaging/homebrew-kmpfire_cli/` | Scaffold to publish as the tap repo |
+
+Release assets: `kmpfire-macos-arm64.tar.gz`, `kmpfire-macos-x64.tar.gz`, `kmpfire-linux-x64.tar.gz` (+ `checksums.txt`).
+
+Secret: `HOMEBREW_TAP_TOKEN` (PAT, push to tap).
+
 ## Out of scope unless asked
 
 - Desktop / Web Firebase targets
 - Generating Kotlin `FirebaseOptions`
 - Auto-adding Crashlytics / Analytics SPM packages
-- Homebrew / Scoop packaging
+- Scoop packaging

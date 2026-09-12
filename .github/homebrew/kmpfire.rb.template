@@ -1,0 +1,46 @@
+# typed: false
+# frozen_string_literal: true
+
+# Homebrew formula template for dungngminh/homebrew-kmpfire_cli
+# Placeholders filled by .github/workflows/deploy-homebrew.yml
+class Kmpfire < Formula
+  desc "CLI to configure Firebase for Kotlin Multiplatform / Compose Multiplatform"
+  homepage "https://github.com/dungngminh/kmpfire_cli"
+  version "{{VERSION}}"
+  license "MIT"
+
+  on_macos do
+    on_arm do
+      url "https://github.com/dungngminh/kmpfire_cli/releases/download/v{{VERSION}}/kmpfire-macos-arm64.tar.gz"
+      sha256 "{{ARM64_SHA256}}"
+
+      def install
+        bin.install "kmpfire-macos-arm64" => "kmpfire"
+      end
+    end
+
+    on_intel do
+      url "https://github.com/dungngminh/kmpfire_cli/releases/download/v{{VERSION}}/kmpfire-macos-x64.tar.gz"
+      sha256 "{{X64_SHA256}}"
+
+      def install
+        bin.install "kmpfire-macos-x64" => "kmpfire"
+      end
+    end
+  end
+
+  on_linux do
+    depends_on arch: :x86_64
+
+    url "https://github.com/dungngminh/kmpfire_cli/releases/download/v{{VERSION}}/kmpfire-linux-x64.tar.gz"
+    sha256 "{{LINUX_X64_SHA256}}"
+
+    def install
+      bin.install "kmpfire-linux-x64" => "kmpfire"
+    end
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/kmpfire --version")
+  end
+end

@@ -44,9 +44,32 @@ Platforms in v1: **Android + iOS only** (no desktop / web Firebase targets).
 
 ## Install / run
 
-### From a release binary
+### curl (recommended)
 
-Download the matching binary from [Releases](https://github.com/dungngminh/kmpfire_cli/releases), make it executable, and put it on your `PATH` as `kmpfire`.
+```bash
+curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install.sh | bash
+```
+
+Pin a release tag:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dungngminh/kmpfire_cli/main/install.sh | bash -s -- v0.1.0
+```
+
+Installs into `~/.local/lib/kmpfire` and links `~/.local/bin/kmpfire` (adds that dir to your shell `PATH` if needed).
+
+### Homebrew
+
+```bash
+brew tap dungngminh/kmpfire_cli
+brew install kmpfire
+```
+
+Requires the tap repo [`dungngminh/homebrew-kmpfire_cli`](https://github.com/dungngminh/homebrew-kmpfire_cli) (updated on each GitHub Release).
+
+### From a release archive
+
+Download `kmpfire-<os>-<arch>.tar.gz` from [Releases](https://github.com/dungngminh/kmpfire_cli/releases), extract, rename to `kmpfire`, and put it on your `PATH`.
 
 ```bash
 kmpfire --help

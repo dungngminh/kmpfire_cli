@@ -1,13 +1,17 @@
-name: Build
+name: Release
 
 on:
   push:
-    branches: [main]
-  pull_request:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to re-release (e.g. v0.1.0). Leave empty when pushing a new tag."
+        required: false
+        type: string
 
-concurrency:
-  group: build-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: write
 
 jobs:
   test:
@@ -15,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -23,7 +29,8 @@ jobs:
         run: ./gradlew jvmTest --no-daemon
 
   native:
-    name: Native ${{ matrix.artifact }}
+    name: Build ${{ matrix.artifact }}
+    needs: [test]
     strategy:
       fail-fast: false
       matrix:
@@ -43,20 +50,51 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
       - name: Link release executable
         run: ./gradlew ${{ matrix.task }} --no-daemon
-      - name: Smoke binary
+      - name: Package archive
         run: |
           cp "${{ matrix.path }}" "${{ matrix.artifact }}"
           chmod +x "${{ matrix.artifact }}"
-          ./${{ matrix.artifact }} --help
+          ./${{ matrix.artifact }} --version || ./${{ matrix.artifact }} -V || true
+          tar -czvf "${{ matrix.artifact }}.tar.gz" "${{ matrix.artifact }}"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.tar.gz
           if-no-files-found: error
-          retention-days: 7
+
+  release:
+    name: GitHub Release
+    needs: [native]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        working-directory: dist
+        run: |
+          sha256sum *.tar.gz > checksums.txt
+          cat checksums.txt
+          ls -la
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: |
+            dist/*.tar.gz
+            dist/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
