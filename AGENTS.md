@@ -4,13 +4,13 @@ Guidance for AI agents working in this repository.
 
 ## What this repo is
 
-`kmpfire` is a FlutterFire-style CLI for **Kotlin Multiplatform / Compose Multiplatform**.
+`kmpfire_cli` ships the **`kmpfire`** command — a FlutterFire-style CLI for **Kotlin Multiplatform / Compose Multiplatform**.
 It wraps the **Firebase CLI** (`firebase-tools`, `--json`) to register Android/iOS apps and write
 `google-services.json` / `GoogleService-Info.plist`. It does **not** generate `DefaultFirebaseOptions`
 or Kotlin Firebase options source.
 
 Package: `io.github.kmpfire`  
-Binary: `kmpfire` (Kotlin/Native per OS/arch; JVM for local/dev)
+Project: `kmpfire_cli` · Binary / command: `kmpfire` (Kotlin/Native per OS/arch; JVM for local/dev)
 
 ## Read first
 

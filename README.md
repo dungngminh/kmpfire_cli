@@ -2,11 +2,11 @@
   <img src="art/kmpfire-banner.png" alt="kmpfire" width="400" />
 </p>
 
-<h1 align="center">kmpfire</h1>
+<h1 align="center">kmpfire_cli</h1>
 
 <p align="center">
   <strong>A CLI helping configure Firebase for Kotlin Multiplatform / Compose Multiplatform applications quickly and easily</strong><br>
-  Register Android / iOS Firebase apps and write native config — from the terminal
+  Command: <code>kmpfire</code> — register Android / iOS Firebase apps and write native config from the terminal
 </p>
 
 <p align="center">
@@ -292,8 +292,6 @@ cd kmpfire_cli
 ./gradlew jvmTest
 ./gradlew jvmRun --args='configure --help'
 ```
-
-Design notes: [`docs/superpowers/specs/2026-09-11-kmpfire-cli-design.md`](docs/superpowers/specs/2026-09-11-kmpfire-cli-design.md) · agent notes: [`AGENTS.md`](AGENTS.md)
 
 1. Fork this repository
 2. Create a branch and make your changes
