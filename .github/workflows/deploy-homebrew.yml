@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout kmpfire_cli
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout Homebrew tap
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: dungngminh/homebrew-kmpfire_cli
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
