@@ -22,6 +22,8 @@ It wraps the [Firebase CLI](https://firebase.google.com/docs/cli) (`firebase-too
 
 Autodownload configuration files for Android and iOS apps, and patch the project files to use them.
 
+https://github.com/user-attachments/assets/2ce52dac-f424-4758-8885-a6db2ba094de
+
 ---
 
 ## Requirements
