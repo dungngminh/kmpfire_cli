@@ -64,7 +64,7 @@ jobs:
           chmod +x "${{ matrix.artifact }}"
           ./${{ matrix.artifact }} --version || ./${{ matrix.artifact }} -V || true
           tar -czvf "${{ matrix.artifact }}.tar.gz" "${{ matrix.artifact }}"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}.tar.gz
